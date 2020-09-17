@@ -34,11 +34,9 @@ def recall():
 
 #Problem 7: Undo (challenge)
 def undo():
-    global current_value,undo_temp,undo_value
-    undo_temp = current_value
-    current_value = undo_value
-    undo_value = undo_temp
-
+    global current_value,undo_value
+    current_value = current_value + undo_value
+    undo_value = current_value - undo_value
 
 #Problem 1: Welcome Message
 if __name__ == "__main__":
