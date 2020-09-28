@@ -11,9 +11,10 @@ if __name__ == '__main__':
     else:
         print("Test 1 failed")
 
+    
     #Problem 2: Sums of Cubes
     total = 0
-    n = 2
+    n = -2
 
     def sum_of_cubes(n):
         '''Calculates and returns the sum of cubes from 1 to
@@ -43,10 +44,9 @@ if __name__ == '__main__':
 
     def check_sums_up_to_n(n):
         '''Checks if the sum of cubes from sum_of_cubes() and
-        sum_of_cubes_formula() are equal for all all values 1
+        sum_of_cubes_formula() are equal for all values 1
         to n.
         '''
-        test = False
         for i in range(1, n + 1):
             if not check_sum(i):
                 return False
@@ -64,4 +64,4 @@ if __name__ == '__main__':
             lebiniz_total += ((-1) ** i) / (2 * i + 1)
         return lebiniz_total * 4
 
-    print (lebiniz_formula(1000))
+    print (lebiniz_formula(5000))
