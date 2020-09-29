@@ -23,6 +23,10 @@ if __name__ == '__main__':
         '''
         global total
         total = 0
+        
+        if n <= 0:
+            print("Value is too low. Cannot find sum of cubes. Choose a value >= 1.")
+            return None
 
         for i in range (1, n + 1):
             total += (i**3)
@@ -32,6 +36,10 @@ if __name__ == '__main__':
         '''Calculates and returns the sum of cubes from 1 to n.
         Uses a formula.
         '''
+        if n <= 0:
+            print("Value is too low. Cannot find sum of cubes. Choose a value >= 1.")
+            return None
+
         return (n * (n + 1) / 2) ** 2
 
     def check_sum(n):
@@ -40,6 +48,10 @@ if __name__ == '__main__':
         If they are, this returns True, otherwise, it returns
         False.
         '''
+        if n <= 0:
+            print("Value is too low. Cannot find sum of cubes. Choose a value >= 1.")
+            return None
+
         return (sum_of_cubes(n) == sum_of_cubes_formula(n))
 
     def check_sums_up_to_n(n):
@@ -47,6 +59,10 @@ if __name__ == '__main__':
         sum_of_cubes_formula() are equal for all values 1
         to n.
         '''
+        if n <= 0:
+            print("Value is too low. Cannot find sum of cubes. Choose a value >= 1.")
+            return None
+
         for i in range(1, n + 1):
             if not check_sum(i):
                 return False
@@ -59,9 +75,13 @@ if __name__ == '__main__':
         '''Calculates and returns the lebiniz formula from
         0 to n
         '''
+        if n <= 0:
+            print("Value is too low. Cannot find sum of cubes. Choose a value >= 1.")
+            return None
+
         lebiniz_total = 0
         for i in range (0, n + 1):
             lebiniz_total += ((-1) ** i) / (2 * i + 1)
         return lebiniz_total * 4
 
-    print (lebiniz_formula(5000))
+    print (lebiniz_formula(n))
