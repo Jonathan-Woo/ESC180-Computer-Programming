@@ -31,7 +31,7 @@ def initialize():
     
     last_finished = 10000000
 
-    star_anchor_1, star_anchor_2 = 0, 0
+    star_anchor_1, star_anchor_2 = -200, -200
     
 def star_can_be_taken(activity):
     '''Returns true iff a star can be used to get more hedons for
@@ -48,49 +48,66 @@ def perform_activity(activity, duration):
     "textbooks", or "resting", running the function should have no
     effect.
     '''
-    global cur_health, cur_hedons, last_finished, cur_star_activity, cur_time
+    global cur_health, cur_hedons, last_finished, cur_star_activity, cur_time, last_activity, last_activity_duration
     if num_error(duration):
         pass
     if str_activity_error(activity):
         pass
+
+    #checks if previous activity was the same. If not, resets activity time.
+    if not(last_activity == activity):
+        last_activity_duration = 0
 
     #uses stars
     use_star(activity, duration)
 
     #running health
     if activity == "running":
-        if duration <= 180:
+        if (last_activity_duration + duration) <= 180:
             cur_health += 3 * duration
         else:
-            cur_health += (180 * 3) + (duration - 180)
+            if (180 - last_activity_duration) > 0:
+                cur_health += ((180 - last_activity_duration) * 3) + (duration - (180 - last_activity_duration))
+            else:
+                cur_health += (duration)
             pass
         #running hedons
-        if ((is_tired(activity) == True) and (cur_star != activity)):
+        if ((is_tired() == True) and (cur_star != activity)):
             cur_hedons -= 2 * duration
         elif duration <= 10:
             cur_hedons += 2 * duration
         else:
             cur_hedons += (10 * 2) - (2 * (duration - 10))
             
-    
     #textbooks health
     if activity == "textbooks":
         cur_health += 2 * duration
         #textbooks hedons
-        if not is_tired(activity):
-            if duration <= 20:
-                cur_hedons += 20
-            else:
-                cur_hedons += 20 - (duration - 20)
+        if ((is_tired() == True) and (cur_star != activity)):
+            cur_hedons -= 2 * duration
+        elif duration <= 20:
+            cur_hedons += 2 * cur_hedons
+        else:
+            cur_hedons += 20 - (duration - 20)
     
     #resting
     if activity == "resting":
         last_finished += duration
+        last_activity = activity
+        cur_time += duration
         pass
 
+    if last_activity == activity:
+        last_finished += duration
+        last_activity_duration += duration
+        cur_time += duration
+        pass
+
+    last_activity_duration = duration
     last_activity = activity
     last_finished = 0
     cur_time += duration
+    cur_star_activity = None
 
 def get_cur_hedons():
     '''Returns the number of hedons that the user has accumulated so far.
@@ -108,7 +125,7 @@ def offer_star(activity):
     Parameter activity is any of the three strings: "running",
     "textbooks", "resting"
     '''
-    global star_anchor_1, star_anchor_2, cur_star, bored_with_stars
+    global star_anchor_1, star_anchor_2, cur_star, bored_with_stars, cur_star_activity
 
     str_activity_error(activity)
 
@@ -122,23 +139,26 @@ def offer_star(activity):
     if ((cur_time - star_anchor_2) > 120):
         star_anchor_1, star_anchor_2 = cur_time, cur_time
         cur_star = 0
+    elif (((cur_time - star_anchor_1) <= 120) and cur_star == 1):
+        star_anchor_2 = cur_time
     elif ((cur_time - star_anchor_1) > 120):
         star_anchor_1 = star_anchor_2
         star_anchor_2 = cur_time
         cur_star = 1
+    else:
+        bored_with_stars = True
+        pass
     
     #sets tracking for new stars. If this is the third star within the
     #span of 2 hours, it sets bored_with_stars to True and prevents
     #the user from using stars for the rest of the simulation.
-    if star_anchor_1 == cur_time:
+    if cur_star == 0:
         cur_star = 1
         cur_star_activity = activity
     else:
-        if star_anchor_2 == cur_time:
+        if cur_star == 1:
             cur_star = 2
             cur_star_activity = activity
-        else:
-            bored_with_stars = True
 
 def use_star(activity, duration):
     global cur_hedons, cur_star_activity
@@ -155,8 +175,34 @@ def most_fun_activity_minute():
     would give the most hedons if the person performed it for one minute 
     at the current time.
     '''
-    pass
+    running_hedons, textbook_hedons = 0, 0
+
+    #running hedons
+    if cur_star_activity == "running":
+        running_hedons += 3
+
+    if ((is_tired() == True) and (cur_star != "running")):
+        running_hedons += -2
+    else:
+        running_hedons += 2
     
+    #textbook hedons
+    if cur_star_activity == "textbooks":
+        textbook_hedons += 3
+
+    if ((is_tired() == True) and (cur_star != "textbooks")):
+        textbook_hedons += -2
+    else:
+        textbook_hedons += 2
+
+    highest_value = max(textbook_hedons, running_hedons, 0)
+    dict = {
+        textbook_hedons: "textbooks",
+        running_hedons: "running",
+        0: "resting"
+    }
+    return dict.get(highest_value)
+
 #helper functions
 
 def num_error(num):
@@ -175,10 +221,10 @@ def str_activity_error(activity):
         return True
     return False
 
-def is_tired(activity):
+def is_tired():
     '''Checks if the user is tired
     '''
-    if last_activity == activity or last_finished < 120:
+    if (last_activity in ["running", "textbooks"] or last_finished < 120):
         return True
     return False
 
@@ -203,5 +249,4 @@ if __name__ == '__main__':
     perform_activity("running", 170)
     print(get_cur_health())            #700 = 210 + 160 * 3 + 10 * 1
     print(get_cur_hedons())            #-430 = -90 + 170 * (-2)
-    
     
