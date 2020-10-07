@@ -23,7 +23,8 @@ def list_to_str(lis):
     '''
     str_lis = ""
     for i in range(len(lis)):
-        str_lis += str(lis[i])
+        str_lis += str(lis[i]) + ", "
+    str_lis = "[" + str_lis[0:len(str_lis)-2] + "]"
     return str_lis
 
 # Problem 3
@@ -51,15 +52,15 @@ def simplify_fraction(n, m):
     for i in range(m):
         if m % (i + 1) == 0:
             list2.append(i + 1)
-    
+
     for i in range(len(list1)):
         print(list1[len(list1) - (i + 1)])
         if  list1[len(list1) - (i + 1)] in list2:
             gdc = list1[len(list1) - (i + 1)]
             break
-    
+
     print(str(n//gdc) + "/" + str(m//gdc))
-    
+
     gdc = euclid(n, m)
     print(n // gdc , "/" , m // gdc)
 
@@ -95,4 +96,4 @@ def euclid(a, b):
     return euclid(b % a, a)
 
 if __name__ == "__main__":
-    print(pi_approx(3))
+    print(list_to_str([1,2,3,7,8]))
