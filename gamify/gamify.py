@@ -72,7 +72,7 @@ def perform_activity(activity, duration):
                 cur_health += (duration)
             pass
         #running hedons
-        if ((is_tired() == True) and (cur_star != activity)):
+        if (is_tired() == True):
             cur_hedons -= 2 * duration
         elif duration <= 10:
             cur_hedons += 2 * duration
@@ -83,7 +83,7 @@ def perform_activity(activity, duration):
     if activity == "textbooks":
         cur_health += 2 * duration
         #textbooks hedons
-        if ((is_tired() == True) and (cur_star != activity)):
+        if (is_tired() == True):
             cur_hedons -= 2 * duration
         elif duration <= 20:
             cur_hedons += 2 * cur_hedons
@@ -181,7 +181,7 @@ def most_fun_activity_minute():
     if cur_star_activity == "running":
         running_hedons += 3
 
-    if ((is_tired() == True) and (cur_star != "running")):
+    if (is_tired() == True):
         running_hedons += -2
     else:
         running_hedons += 2
@@ -190,7 +190,7 @@ def most_fun_activity_minute():
     if cur_star_activity == "textbooks":
         textbook_hedons += 3
 
-    if ((is_tired() == True) and (cur_star != "textbooks")):
+    if (is_tired() == True):
         textbook_hedons += -2
     else:
         textbook_hedons += 2
