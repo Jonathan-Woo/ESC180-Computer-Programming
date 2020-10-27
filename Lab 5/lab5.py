@@ -4,7 +4,7 @@ def list1_start_with_list2(list1, list2):
     whether the items of list 2 are identical and in the same order as list1
     '''
     if len(list1) >= len(list2):
-        for i in range (len(list2)):    
+        for i in range (len(list2)):
             if list2[i] != list1[i]:
                 return False
         return True
@@ -60,7 +60,7 @@ def mult_M_v(M, v):
 
 #Problem 4c
 def mult_M_N(M, N):
-    '''Takes 2 matrices M and N 
+    '''Takes 2 matrices M and N
     Calculates the product of M x N
     '''
     product_matrix = []
@@ -77,4 +77,4 @@ def mult_M_N(M, N):
     return product_matrix
 
 if __name__ == "__main__":
-    pass
+    print(mult_M_N([[1,2,3],[0,1,2]],[[1,2],[3,4],[5,6]]))

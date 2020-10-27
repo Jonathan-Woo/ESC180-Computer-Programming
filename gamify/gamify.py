@@ -95,14 +95,14 @@ def perform_activity(activity, duration):
         last_finished += duration
         last_activity = activity
         cur_time += duration
-        pass
+        return
 
     #Consecutive activities
     if last_activity == activity:
         last_finished = 0
         last_activity_duration += duration
         cur_time += duration
-        pass
+        return
 
     last_activity_duration = duration
     last_activity = activity
