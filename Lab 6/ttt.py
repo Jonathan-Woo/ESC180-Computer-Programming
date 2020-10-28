@@ -48,6 +48,8 @@ def put_in_board(board, mark, square_num):
     '''
     board[board_coordinate(square_num)[0]][board_coordinate(square_num)[1]] = mark
     
+    return board
+    
 if __name__ == '__main__':
     board = make_empty_board()
     print_board_and_legend(board)    
