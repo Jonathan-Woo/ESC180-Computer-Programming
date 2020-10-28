@@ -41,7 +41,12 @@ def board_coordinate(square_num):
             return [row,column_count]
         position += 1
     return None
-    
+
+#question 1b
+def put_in_board(board, mark, square_num):
+    '''Mark ("X" or "O") in the coordinates of square_num
+    '''
+    board[board_coordinate(square_num)[0]][board_coordinate(square_num)[1]] = mark
     
 if __name__ == '__main__':
     board = make_empty_board()
