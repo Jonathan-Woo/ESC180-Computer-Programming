@@ -48,14 +48,15 @@ def put_in_board(board, mark, square_num):
     return board
 
 # 1 c)
-count = 0
-input_str = ""
 
-while input_str != "X":
-    input_str = input("Enter your move: ")
-    count += 1
+num_square = 9
 
-print("The use did not say X {} times".format(count - 1))
+for i in range(num_square):
+    if i % 2 == 0:     # marking "X"
+        input_str = input("Enter your move: ")
+        if input_str <=     # check if input_str is int
+
+
 
 # 2 a)
 def get_free_squares(board):
