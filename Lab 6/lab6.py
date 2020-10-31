@@ -47,15 +47,6 @@ def put_in_board(board, mark, square_num):
     board[board_coordinate(square_num)[0]][board_coordinate(square_num)[1]] = mark
     return board
 
-# 1 c)
-
-num_square = 9
-
-for i in range(num_square):
-    if i % 2 == 0:     # marking "X"
-        input_str = input("Enter your move: ")
-        if input_str <=     # check if input_str is int
-
 
 
 # 2 a)
@@ -103,10 +94,24 @@ if __name__ == '__main__':
     board = make_empty_board()
     print_board_and_legend(board)
 
-    print("\n\n")
+    # 1 c)
+    game = True
+    turn_counter = 0
 
-    # board = [["O", "X", "X"],
-    #          [" ", "X", " "],
-    #          [" ", "O", " "]]
+    while game:
+        if turn_counter % 2 == 0:
+            mark = "X"
+        else:
+            mark = "O"
 
-    print_board_and_legend(board)
+        input_str = input("Enter your move: ")
+        if input_str not in (["1","2","3","4","5","6","7","8","9"]):
+            print("Invalid Input. Try again.")
+            turn_counter -= 1
+        else:
+            put_in_board(board, mark, int(input_str))
+
+        print_board_and_legend(board)
+        print("\n\n")
+
+        turn_counter += 1
