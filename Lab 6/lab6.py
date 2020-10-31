@@ -8,7 +8,6 @@
 
 import random
 
-
 def print_board_and_legend(board):
     for i in range(3):
         line1 = " " +  board[i][0] + " | " + board[i][1] + " | " +  board[i][2]
@@ -16,8 +15,6 @@ def print_board_and_legend(board):
         print(line1 + " "*5 + line2)
         if i < 2:
             print("---+---+---" + " "*5 + "---+---+---")
-
-
 
 def make_empty_board():
     board = []
@@ -31,7 +28,6 @@ def board_coordinate(square_num):
     given position
     '''
     row = ((square_num - 1) // 3)
-
     position = (3 * row) + 1
 
     for column_count in range(3):
@@ -47,88 +43,96 @@ def put_in_board(board, mark, square_num):
     board[board_coordinate(square_num)[0]][board_coordinate(square_num)[1]] = mark
     return board
 
-# 1 c) in if __name__ == '__main__'
+# 1 c) in main block
 
 # 2 a)
 def get_free_squares(board):
-    ''' Returns coords of empty squares'''
-
+    ''' Returns coords of empty squares
+    '''
     empty = []    # keeps track of coords empty squares
-    num_square = 9
+    coord = []
 
     # for each squares, check if the content is equal to " "
-    # if it is, append the coord of that square to empty[]
-    # but I couldn't figure out how to do it
+    #get the coordinate and append it to the empty tracking array
 
-    for square_num in range(num_square):
-        if board[board_coordinate(square_num)] == " ":
-            empty.append(board[board_coordinate(square_num)])
-
+    for i in range(len(board)):
+        for e in range(len(board[0])):
+            if board[i][e] == " ":
+                coord = [i,e]
+            empty.append(coord)
     return empty
 
 # 2 b)
 def make_random_move(board, mark):
-    ''' finds a random free square in board and put mark in that square'''
+    ''' finds a random free square in board and put mark in that square
+    '''
+    empty = get_free_squares(board)
+    random_square_coord = empty[int(len(empty) * random.random())]
 
-    # use get_free_squares(board) to get the coords of empty squares
-    # use (9 * random.random()) to get a random number from 0 to 9
-    # check individually if the random numbers are empty squares,
-    # if it it, then use that square and put mark in that square
+    board[random_square_coord[0]][random_square_coord[1]] = mark
 
-# 2 c)
-# use make_random_move() in order to have he computer playagainst user
+    return board
 
+# 2 c) in main block
 
 # 3 a)
 def is_row_all_marks(board, row_i, mark):
-    ''' Returns True iff row_i in board contains 3 marks = mark'''
+    ''' Returns True iff row_i in board contains 3 marks = mark
+    '''
     # check every element in row_i if they are all equal to mark
-    for i in board[row_i]:
-        if i == mark:
-            return True
-    pass  # game continues
+    return board[row_i] == [mark,mark,mark]
 
 # 3 b)
 def is_col_all_marks(board, col_i, mark):
     ''' Returns True iff col_i in board contains 3 marks = mark'''
     # check every element in row_i if they are all equal to mark
-    for i in board[col_i]:
-        if i == mark:
-            return True
-    pass  # game continues
+    column = []
+
+    for i in board:
+        column.append(i[col_i])
+
+    return column == [mark,mark,mark]
 
 
 # 3 c)
 # use the above 2 fcns, also check diagonals
 def is_diagonal_all_marks(board, mark):
-    if board[0][0] == board[1][1] == board[2][2] == mark:
-        return True
-    elif board[0][2] == board[1][1] == board[2][0] == mark:
-        return True
-    pass  # game continues
+    diagonal_1 = []
+    diagonal_2 = []
 
+    for i in range (len(board)):
+        diagonal_1.append(board[i][i])
+        diagonal_2.append(board[len(board)-i][i])
+
+    return diagonal_1 == [mark,mark,mark] or diagonal_2 == [mark,mark,mark]
 
 def is_win(board, mark):
     ''' Returns True iff the mark mark won on the board board'''
-    if is_row_all_marks:
-        return True
-    elif is_col_all_marks:
-        return True
-    elif is_diagonal_all_marks:
-        return True
-    pass
+    for i in range(len(board)):
+        if is_row_all_marks(board,i,mark) or is_col_all_marks(board,i,mark) or is_diagonal_all_marks(board,i,mark):
+            return True
+    return False
 
-
-# 3 d)
-# incorporate is_win()
-
+# 3 d) in main block
 
 # 4 a)
 # Write a function which tries to put the computer’s mark in every free square on the board, and checks
 # whether is_win() returns True for the new board, returns if it does, and removes the mark and tries
 # to place it in another square otherwise. If there is no square such that putting a mark in it leads to an
-# immediate win, the function should put mark in a random free square.
+# immediate win, the function should put mark in a random free square
 
+def smart_move(board,mark):
+    empty_board = get_free_squares(board)
+    test_board = board
+
+    for i in empty_board:
+        test_board[i[0]][i[1]] = mark
+        if is_win(test_board,mark):
+            return test_board
+        else:
+            test_board = board
+
+    return(make_random_move())
 
 # 4 b)
 # Improve the algorithm that plays for the computer as much as you can.
@@ -137,10 +141,43 @@ if __name__ == '__main__':
     board = make_empty_board()
     print_board_and_legend(board)
 
-    # 1 c)
     game = True
-    turn_counter = 0
+    won = False
 
+'''
+    invalid_input = True
+    while game:
+        while invalid_input:
+            input_str = input("Enter your move: ")
+            if input_str not in (["1","2","3","4","5","6","7","8","9"]):
+                print("Invalid Input. Try again.")
+            else:
+                invalid_input = False
+                board = put_in_board(board, "X", int(input_str))
+                print_board_and_legend(board)
+                print("\n")
+
+        #user win check
+        won = is_win(board,"X")
+        if won:
+            print("Congratulations!")
+            break
+
+        #Computer move
+        board = make_random_move(board,"O")
+        invalid_input = True
+        print_board_and_legend(board)
+
+        #computer win check
+        won = is_win(board,"X")
+        if won:
+            print("Lost!")
+            print_board_and_legend(board)
+            break
+'''
+'''
+    turn_counter = 0
+    # 1 c)
     while game:
         if turn_counter % 2 == 0:
             mark = "X"
@@ -152,9 +189,11 @@ if __name__ == '__main__':
             print("Invalid Input. Try again.")
             turn_counter -= 1
         else:
-            put_in_board(board, mark, int(input_str))
+            board = put_in_board(board, mark, int(input_str))
 
         print_board_and_legend(board)
         print("\n\n")
 
         turn_counter += 1
+'''
+
