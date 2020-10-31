@@ -27,7 +27,7 @@ def make_empty_board():
 
 # 1 a)
 def board_coordinate(square_num):
-    '''Returns coordinate in a list [row,column] of the
+    '''Returns coordinate in a list [row, column] of the
     given position
     '''
     row = ((square_num - 1) // 3)
@@ -47,34 +47,77 @@ def put_in_board(board, mark, square_num):
     board[board_coordinate(square_num)[0]][board_coordinate(square_num)[1]] = mark
     return board
 
-
+# 1 c) in if __name__ == '__main__'
 
 # 2 a)
 def get_free_squares(board):
     ''' Returns coords of empty squares'''
 
+    empty = []    # keeps track of coords empty squares
+    num_square = 9
+
+    # for each squares, check if the content is equal to " "
+    # if it is, append the coord of that square to empty[]
+    # but I couldn't figure out how to do it
+
+    for square_num in range(num_square):
+        if board[board_coordinate(square_num)] == " ":
+            empty.append(board[board_coordinate(square_num)])
+
+    return empty
 
 # 2 b)
 def make_random_move(board, mark):
     ''' finds a random free square in board and put mark in that square'''
 
+    # use get_free_squares(board) to get the coords of empty squares
+    # use (9 * random.random()) to get a random number from 0 to 9
+    # check individually if the random numbers are empty squares,
+    # if it it, then use that square and put mark in that square
+
 # 2 c)
-# use make_random_move()
+# use make_random_move() in order to have he computer playagainst user
 
 
 # 3 a)
 def is_row_all_marks(board, row_i, mark):
     ''' Returns True iff row_i in board contains 3 marks = mark'''
-
+    # check every element in row_i if they are all equal to mark
+    for i in board[row_i]:
+        if i == mark:
+            return True
+    pass  # game continues
 
 # 3 b)
 def is_col_all_marks(board, col_i, mark):
     ''' Returns True iff col_i in board contains 3 marks = mark'''
+    # check every element in row_i if they are all equal to mark
+    for i in board[col_i]:
+        if i == mark:
+            return True
+    pass  # game continues
+
 
 # 3 c)
 # use the above 2 fcns, also check diagonals
+def is_diagonal_all_marks(board, mark):
+    if board[0][0] == board[1][1] == board[2][2] == mark:
+        return True
+    elif board[0][2] == board[1][1] == board[2][0] == mark:
+        return True
+    pass  # game continues
+
+
 def is_win(board, mark):
     ''' Returns True iff the mark mark won on the board board'''
+    if is_row_all_marks:
+        return True
+    elif is_col_all_marks:
+        return True
+    elif is_diagonal_all_marks:
+        return True
+    pass
+
 
 # 3 d)
 # incorporate is_win()
