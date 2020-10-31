@@ -102,14 +102,14 @@ def is_diagonal_all_marks(board, mark):
 
     for i in range (len(board)):
         diagonal_1.append(board[i][i])
-        diagonal_2.append(board[len(board)-i][i])
+        diagonal_2.append(board[len(board)-1-i][i])
 
     return diagonal_1 == [mark,mark,mark] or diagonal_2 == [mark,mark,mark]
 
 def is_win(board, mark):
     ''' Returns True iff the mark mark won on the board board'''
     for i in range(len(board)):
-        if is_row_all_marks(board,i,mark) or is_col_all_marks(board,i,mark) or is_diagonal_all_marks(board,i,mark):
+        if is_row_all_marks(board,i,mark) or is_col_all_marks(board,i,mark) or is_diagonal_all_marks(board,mark):
             return True
     return False
 
