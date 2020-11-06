@@ -144,7 +144,6 @@ if __name__ == '__main__':
     game = True
     won = False
 
-    '''
     invalid_input = True
     while game:
         while invalid_input:
@@ -174,7 +173,7 @@ if __name__ == '__main__':
             print("Lost!")
             print_board_and_legend(board)
             break
-    '''
+
     '''
     turn_counter = 0
     # 1 c)
@@ -196,6 +195,7 @@ if __name__ == '__main__':
 
         if is_win(board,mark):
             print(f'Congratulations! {mark} won!')
+            break
 
         turn_counter += 1
     '''
