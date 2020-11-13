@@ -37,7 +37,7 @@ print(M_listoflists) #[[1, -2, 3], [3, 10, 1], [1, 5, 3]]
 def print_matrix(M_lol):
     '''Prints list of list interpretation of matrix M_lol
     '''
-    print(M_lol.tolist())
+    print(array(M))
 
 #Problem 2
 def get_lead_ind(row):
@@ -59,7 +59,7 @@ def get_row_to_swap(M, start_i):
         if get_lead_ind(M[row]) < smallest_index:
             smallest_index = get_lead_ind(M[row])
             row_number = row
-    return row_number + 1
+    return row_number
 
 #Problem 4
 def add_rows_coefs(r1, c1, r2, c2):
@@ -80,9 +80,19 @@ def eliminate(M, row_to_sub, best_lead_ind):
     coefficient = None
     subtraction_value = M[row_to_sub][best_lead_ind]
     for row in range(row_to_sub + 1, len(M)):
-        coefficient = M[row][best_lead_ind]/subtraction_value
-        for col in range(best_lead_ind,len(M[0])):
-            M[row][col] = M[row][col] - (subtraction_value * coefficient)
+        coefficient = -(M[row][best_lead_ind]/subtraction_value)
+        M[row] = add_rows_coefs(M[row], 1, M[row_to_sub], coefficient)
+
+def eliminate_back(M, row_to_sub, best_lead_ind):
+    '''Eliminates rows above row_to_sub by finding a coefficient applied to
+    best_lead_ind of row_to_sub such that all rows above row_to_sub at
+    best_lead_ind become 0.
+    '''
+    coefficient = None
+    subtraction_value = M[row_to_sub][best_lead_ind]
+    for row in range(row_to_sub - 1, -1, -1):
+        coefficient = -(M[row][best_lead_ind]/subtraction_value)
+        M[row] = add_rows_coefs(M[row], 1, M[row_to_sub], coefficient)
 
 #Problem 6
 def forward_step(M):
@@ -90,16 +100,62 @@ def forward_step(M):
     Starts with rearranging rows so that rows are arranged in order of
     decreasing leading non-zero index.
     '''
+    print("The matrix is currently:")
+    print_matrix(M)
+    print("================================================================================")
     for count in range(len(M)):
-        M[count], M[get_row_to_swap(M, count)] = M[get_row_to_swap(M, count)], M[count]
-        print("Rearrange", str(count + 1))
-        print(M)
+        temp_row_number = get_row_to_swap(M, count)
+        M[count], M[temp_row_number] = M[temp_row_number], M[count]
+        print("Now looking at row", count)
+        print(f'Swapping rows {count} and {count + 1} so that entry {count} in the current row is non-zero')
+        print("The matrix is currently:")
+        print_matrix(M)
         eliminate(M, count, get_lead_ind(M[count]))
-        print("Eliminate", str(count + 1))
-        print(M)
+        print(f"Adding row {count} to rows below it to eliminate coefficients in column {get_lead_ind(M[count])}")
+        print("The matrix is currently:")
+        print_matrix(M)
+        print("================================================================================")
+
+#Problem 7
+def backward_step(M):
+    '''Applies the backward step of Gaussian elimination.
+    '''
+    print("Now performing the backward step")
+    for count in range(len(M) - 1, -1, -1):
+        eliminate_back(M, count, get_lead_ind(M[count]))
+        print(f"Adding row {count} to rows above it to eliminate coefficients in column {get_lead_ind(M[count])}")
+        print("The matrix is currently:")
+        print_matrix(M)
+        print("================================================================================")
+
+    for row in range(len(M)):
+        normalize(M[row])
+
+def normalize(row):
+    '''Normalizes row row by dividing each item in row by the first
+    non-zero item.
+    '''
+    factor = row[get_lead_ind(row)]
+    for item in range(get_lead_ind(row),len(row)):
+        row[item] = row[item]/factor
+
+#Problem 8
+def solve_Mx_b(M, b):
+    for row in range(len(M)):
+        M[row].append(b[row])
+
+    forward_step(M)
+    backward_step(M)
+
+    x = []
+    for row in range(len(M)):
+        x.append(M[row][len(M[0])-1])
+
+    return x
 
 if __name__ == '__main__':
-    M = [[0,0,1,0,2],[1,0,2,3,4],[3,0,4,2,1],[1,0,1,1,2]]
+    M = [[1,-2,3],[0,16,-8],[0,0,3.5]]
+    b = [22,248,-38.5]
 
 
 
