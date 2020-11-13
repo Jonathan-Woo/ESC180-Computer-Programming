@@ -75,7 +75,6 @@ def eliminate(M, row_to_sub, best_lead_ind):
     return M
 
 
-
 # Problem 6
 def forward_step(M):
     ''' applies the fwd step of GE to M'''
@@ -98,25 +97,35 @@ def forward_step(M):
         print("The matrix is currently:")
         print_matrix(M)
         print("=========================================================================")
+    print("Done with the forward step")
+    print("The matrix is currently:")
+    print_matrix(M)
 
 def divide(row, coef):
     list = []
 
     for i in range(len(row)):
-        list.append(row[i]*coef)
+        list.append(row[i]/coef)
 
     return list
 
 
+def eliminate_back(M, row_to_sub, best_lead_ind):
+    multipier = 0
+    for i in range(row_to_sub - 1, -1, -1):
+        multiplier = -(M[i][best_lead_ind])/(M[row_to_sub][best_lead_ind])
+        new_rows = add_rows_coefs(M[row_to_sub], multiplier, M[i], 1)
+        M[i] = new_rows
+    return M
 
 
 # Problem 7
 def backward_step(M):
     ''' applies the bwd step of GE to M'''
     print("Now performing the backward step")
-    for i in range(len(M)):
-        print("Adding row", len(M)-(i+1), "to rows above it to eliminate coefficients in column", get_lead_ind(M[len(M)-(i+1)]))
-        eliminate(M, len(M)-(i+1), get_lead_ind(M[len(M)-(i+1)]))
+    for i in range(len(M) - 1, -1, -1):
+        print("Adding row", i, "to rows above it to eliminate coefficients in column", get_lead_ind(M[i]))
+        eliminate_back(M, i, get_lead_ind(M[i]))
         print("The matrix is currently:")
         print_matrix(M)
         print("=========================================================================")
@@ -129,24 +138,23 @@ def backward_step(M):
     print_matrix(M)
 
 
+# Problem 8
+def solve(M, b):
+    ''' first build the augmented matrix (M|b), then apply GE to the augmented
+    matrix, and then solve for x '''
+    for row in range(len(M)):
+        M[row].append(b[row])
 
+    forward_step(M)
+    backward_step(M)
+    x = []
+    for row in range(len(M)):
+        x.append(M[row][len(M[0])-1])
+    return x
 
+if __name__ == '__main__':
+    M = [[ 1, -2, 3],
+    [ 3, 10, 1],
+    [ 1, 5, 3]]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    b = [22, 314, 92]
