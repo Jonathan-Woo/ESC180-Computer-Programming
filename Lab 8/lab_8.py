@@ -32,7 +32,7 @@ def dict_to_str_sorted(d):
 
     dict_list.sort()
     for i in range(len(dict_list)):
-        print(dict_list[i])
+        print(dict_list[i][0], ",", dict_list[i][1])
 
 #Problem 4
 '''Creates a dictionary whose keys are words and whose values are lists of
@@ -48,15 +48,18 @@ count = 0
 for lines in text:
     if not ";;;" in lines:
         cur_line = lines.split("  ")
-        key = lines.split("  ")[0]
-        value = lines.split("  ")[1:]
-        dict[key] = value
+        if len(cur_line) == 2:
+            key = cur_line[0]
+            value = cur_line[1]
+            print(key, value)
+            dict[key] = value
+            # count +=1
+            # if count == 3:
+            #     break
 
 print(dict)
 
 # if __name__ == "__main__":
 #     d = {1:2,5:6,0:4}
-#
 #     dict_to_str_sorted(d)
-#
 
