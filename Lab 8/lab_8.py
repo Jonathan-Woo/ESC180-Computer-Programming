@@ -50,14 +50,12 @@ for lines in text:
         cur_line = lines.split("  ")
         if len(cur_line) == 2:
             key = cur_line[0]
-            value = cur_line[1]
-            print(key, value)
+            value = cur_line[1].split(" ")
             dict[key] = value
-            # count +=1
-            # if count == 3:
-            #     break
+        else:
+            print(lines)
 
-print(dict)
+# print(dict)
 
 # if __name__ == "__main__":
 #     d = {1:2,5:6,0:4}
