@@ -5,24 +5,16 @@ Created on Fri Nov 27 14:23:59 2020
 
 @author: jwoo
 """
-def frequency(word, text):
-    '''Determines the number of times word appears in text
-    '''
-    count = 0
-    for i in range(len(text)):
-        if word == text[i]:
-            count += 1
-
-    return count
-
 #Problem 1
 text = open("gutenberg_excerpt.txt", encoding = "latin-1").read().split()
 
 #Part (a)
 word_counts = {}
-test_text = set(text)
-for word in test_text:
-    word_counts[word] = frequency(word, text)
+for word in text:
+    if word in word_counts.keys():
+        word_counts[word] += 1
+    else:
+        word_counts[word] = 1
 
 #Part (b)
 def top10(L):
