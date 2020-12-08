@@ -21,7 +21,7 @@ def cosine_similarity(vec1, vec2):
     #If either vec1 or vec2 do not have any semantic descriptors, they cannot be
     #compared. Their default cosine_similarity is then 0.
     if len(vec1) == 0 or len(vec2) == 0:
-        return 0
+        return -1
 
     #Firstly, we need to find matching keys between vec1 and vec2
     matching = (set(vec1.keys()).intersection(set(vec2.keys())))
@@ -50,9 +50,7 @@ def build_semantic_descriptors(sentences):
         words = list(set(sublist))
         #Now, we have the individual words as a list without duplicates
         for word in words:
-            words = word.lower()
-
-            ["i", "am", "a", "sick", "man"]
+            word = word.lower()
 
             #For words that do not yet have an entry in semantic_descriptors
             #we must initialize an empty dictionary as their value since
@@ -64,6 +62,7 @@ def build_semantic_descriptors(sentences):
             #semantic_descriptors if the other words are not the words
             #under analysis. You cannot be associated with yourself!
             for other_words in sublist:
+                other_words = other_words.lower()
                 if word != other_words:
                     if other_words in semantic_descriptors[word]:
                         semantic_descriptors[word][other_words] += 1
@@ -143,13 +142,15 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
 
     #Now that we have a dictionary of the results of semantic similarity, we must determine
     #which word had the highest semantic similarity.
-    highest_value = 0
-    highest_key = 0
+    highest_value = -1
+    highest_key = -1
     for key, value in results.items():
         if value > highest_value:
             highest_value = value
             highest_key = key
 
+    if highest_key == -1:
+        highest_key = choices[0]
     #Return the word with the highest semantic similarity
     return highest_key
 
@@ -166,22 +167,14 @@ def run_similarity_test(filename, semantic_descriptors, similarity_fn):
     #Now we will evaluate most_similar_word()
     num_correct = 0
     words = []
-    test = {}
     for line in lines:
         words = line.split(" ")
         sol = most_similar_word(words[0], words[2:], semantic_descriptors, similarity_fn)
-        if type(sol) != str:
-            test[words[0]] = [False, words[1:]]
-            continue
-        elif sol == words[1]:
-            test[words[0]] = [True, words[1:]]
-            num_correct += 1
-        elif sol != words[1]:
-            test[words[0]] = [False, words[1:]]
-        words = []
 
-    return (num_correct/len(lines))*100, test
+        if sol == words[1]:
+            num_correct += 1
+
+    return (num_correct/len(lines))*100
 
 if __name__ == "__main__":
-    semantic_descriptors = build_semantic_descriptors_from_files(["test1.txt"])
-    sol, test = run_similarity_test("test.txt", semantic_descriptors, cosine_similarity)
+    pass
