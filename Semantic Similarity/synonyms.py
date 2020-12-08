@@ -5,22 +5,24 @@ Author: Michael Guerzhoy. Last modified: Nov. 14, 2016.
 
 import math, copy
 
-
 def norm(vec):
     '''Return the norm of a vector stored as a dictionary,
     as described in the handout for Project 3.
     '''
-
     sum_of_squares = 0.0
     for x in vec:
         sum_of_squares += vec[x] * vec[x]
 
     return math.sqrt(sum_of_squares)
 
-
 def cosine_similarity(vec1, vec2):
     '''Computes the cosine similarity of dictionaries vec1 and vec2
     '''
+    #If either vec1 or vec2 do not have any semantic descriptors, they cannot be
+    #compared. Their default cosine_similarity is then 0.
+    if len(vec1) == 0 or len(vec2) == 0:
+        return 0
+
     #Firstly, we need to find matching keys between vec1 and vec2
     matching = (set(vec1.keys()).intersection(set(vec2.keys())))
 
@@ -30,12 +32,7 @@ def cosine_similarity(vec1, vec2):
         numerator += (vec1.get(i) * vec2.get(i))
 
     #Solve for the denominator of the equation
-    sum_1, sum_2 = 0, 0
-    for values in vec1.values():
-        sum_1 += values**2
-    for values in vec2.values():
-        sum_2 += values**2
-    denominator = math.sqrt(sum_1 * sum_2)
+    denominator = norm(vec1) * norm(vec2)
 
     #Solve for cosine similarity
     return (numerator/denominator)
@@ -45,31 +42,40 @@ def build_semantic_descriptors(sentences):
     sentences and values are the semantic descriptor of the words
     '''
     semantic_descriptors = {}
-    #Loop through sentences once. However, we have to loop through
-    #each sublist the length of the sublist times
+    #Since we know that duplicate words do not change the association.
+    #In other words, the same words appearing more than once in a sentence
+    #does not change the semantic similarity, we can make a set of the
+    #words.
     for sublist in sentences:
-        full_sentence_copy = copy.deepcopy(sublist)
-        full_sentence = copy.deepcopy(sublist)
-        for word in full_sentence:
-            full_sentence_copy.remove(word)
-            for word_to_update in full_sentence_copy:
-                #Make a dictionary entry for each word if it does not exist
-                #already
-                if word_to_update not in semantic_descriptors:
-                    semantic_descriptors[word_to_update] = {}
+        words = list(set(sublist))
+        #Now, we have the individual words as a list without duplicates
+        for word in words:
+            words = word.lower()
 
-                #Once we know that the word to update is in the dictionary
-                #semantic_descriptors, we need to check if the word we want
-                #to update (word) exists in that sub-dictionary yet
-                #if it does, then increment it by 1. If not, set it to 1
-                if word in semantic_descriptors[word_to_update]:
-                    semantic_descriptors[word_to_update][word] += 1
-                else:
-                    semantic_descriptors[word_to_update][word] = 1
+            ["i", "am", "a", "sick", "man"]
 
-            #After going through each item in the sublist, reset the sublist
-            #to the full sentence and remove the next item
-            full_sentence_copy = copy.deepcopy(full_sentence)
+            #For words that do not yet have an entry in semantic_descriptors
+            #we must initialize an empty dictionary as their value since
+            #we cannot add values to a dictionary that does not exist!
+            if word not in semantic_descriptors:
+                semantic_descriptors[word] = {}
+
+            #here, we go through the same sentence but only add to
+            #semantic_descriptors if the other words are not the words
+            #under analysis. You cannot be associated with yourself!
+            for other_words in sublist:
+                if word != other_words:
+                    if other_words in semantic_descriptors[word]:
+                        semantic_descriptors[word][other_words] += 1
+                    #in this case, the value for the dictionary for
+                    #key = word has no value yet. Although we have a key
+                    #as other_words, the value is still None type. We must
+                    #initialize it to an integer before adding in future
+                    #cases. Since this case only runs for the first time
+                    #other_words exists for the key word, then it must be
+                    #equal to 1.
+                    else:
+                        semantic_descriptors[word][other_words] = 1
     return semantic_descriptors
 
 def build_semantic_descriptors_from_files(filenames):
@@ -92,17 +98,23 @@ def build_semantic_descriptors_from_files(filenames):
 
         #Convert all punctuation types to "." so that we only have to
         #split once
-        text.replace("!", ".")
-        text.replace("?", ".")
+        text = text.replace("!", ".")
+        text = text.replace("?", ".")
         sentences = text.split(".")
         sentences = remove_empties(sentences)
         for item in sentences:
             #We convert all punctuation to spaces so that we only have to
             #split once.
-            item.replace(",", " ")
-            item.replace("-", " ")
-            item.replace(":", " ")
-            item.replace(";", " ")
+            item = item.replace(",", " ")
+            item = item.replace("-", " ")
+            item = item.replace(":", " ")
+            item = item.replace(";", " ")
+            item = item.replace("*", " ")
+            item = item.replace("$", " ")
+            item = item.replace("%", " ")
+            item = item.replace("@", " ")
+            item = item.replace("&", " ")
+            item = item.replace("#", " ")
             separated_sentences.append(remove_empties(item.split(" ")))
 
     return build_semantic_descriptors(separated_sentences)
@@ -113,6 +125,10 @@ def remove_empties(list):
     for item in list:
         if item == '':
             list.remove('')
+        elif item == ' ':
+            list.remove(' ')
+        elif item == '  ':
+            list.remove('  ')
     return list
 
 def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
@@ -123,7 +139,7 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
     #First, get the results of the semantic similarity between
     #word and all of the options in choices
     for choice in choices:
-        results[choice] = cosine_similarity(semantic_descriptors.get(word), semantic_descriptors.get(choice))
+        results[choice] = similarity_fn(semantic_descriptors.get(word, {}), semantic_descriptors.get(choice, {}))
 
     #Now that we have a dictionary of the results of semantic similarity, we must determine
     #which word had the highest semantic similarity.
@@ -138,8 +154,34 @@ def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
     return highest_key
 
 def run_similarity_test(filename, semantic_descriptors, similarity_fn):
-    pass
+    '''Returns the percentage of questions on which most_similar_word()
+    guesses the right word where the right word is given.
+    '''
+    #Firstly, we must convert the text file into a list of lists where
+    #each list item is a sentence and sublists are the words of the
+    #sentence.
+    lines = open(filename, "r", encoding="latin1").read().split("\n")
+    lines = remove_empties(lines)
+
+    #Now we will evaluate most_similar_word()
+    num_correct = 0
+    words = []
+    test = {}
+    for line in lines:
+        words = line.split(" ")
+        sol = most_similar_word(words[0], words[2:], semantic_descriptors, similarity_fn)
+        if type(sol) != str:
+            test[words[0]] = [False, words[1:]]
+            continue
+        elif sol == words[1]:
+            test[words[0]] = [True, words[1:]]
+            num_correct += 1
+        elif sol != words[1]:
+            test[words[0]] = [False, words[1:]]
+        words = []
+
+    return (num_correct/len(lines))*100, test
 
 if __name__ == "__main__":
-    filenames = ["text1.txt","text2.txt","text3.txt"]
-    sol = build_semantic_descriptors_from_files(filenames)
+    semantic_descriptors = build_semantic_descriptors_from_files(["test1.txt"])
+    sol, test = run_similarity_test("test.txt", semantic_descriptors, cosine_similarity)
