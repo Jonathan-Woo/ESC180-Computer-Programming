@@ -48,6 +48,7 @@ def build_semantic_descriptors(sentences):
     #words.
     for sublist in sentences:
         words = list(set(sublist))
+        words = remove_empties(words)
         #Now, we have the individual words as a list without duplicates
         for word in words:
             word = word.lower()
