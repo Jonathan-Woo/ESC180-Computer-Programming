@@ -87,34 +87,17 @@ def build_semantic_descriptors_from_files(filenames):
     #for each file, break up the sentences and append the separated words to
     #a list sentences
     for filename in range(len(filenames)):
-        lines = open(filenames[filename], "r", encoding="latin1").read().split("\n")
-
-        #Now that we have all the lines of the text in a list, we must join the
-        #lists as a single string.
-        text = ""
-        for item in lines:
-            text += item + " "
-        text = text[:len(text)-1]
-
+        text = open(filenames[filename], "r", encoding="latin-1").read()
+        text = text.replace("\n", "")
         #Convert all punctuation types to "." so that we only have to
         #split once
-        text = text.replace("!", ".")
-        text = text.replace("?", ".")
+        text = text.replace("!", ".").replace("?", ".")
         sentences = text.split(".")
         sentences = remove_empties(sentences)
         for item in sentences:
             #We convert all punctuation to spaces so that we only have to
             #split once.
-            item = item.replace(",", " ")
-            item = item.replace("-", " ")
-            item = item.replace(":", " ")
-            item = item.replace(";", " ")
-            item = item.replace("*", " ")
-            item = item.replace("$", " ")
-            item = item.replace("%", " ")
-            item = item.replace("@", " ")
-            item = item.replace("&", " ")
-            item = item.replace("#", " ")
+            item = item.replace(",", " ").replace("-", " ").replace(":", " ").replace(";", " ").replace("*", " ").replace("$", " ").replace("%", " ").replace("@", " ").replace("&", " ").replace("#", " ")
             separated_sentences.append(remove_empties(item.split(" ")))
 
     return build_semantic_descriptors(separated_sentences)
@@ -127,8 +110,6 @@ def remove_empties(list):
             list.remove('')
         elif item == ' ':
             list.remove(' ')
-        elif item == '  ':
-            list.remove('  ')
     return list
 
 def most_similar_word(word, choices, semantic_descriptors, similarity_fn):
@@ -178,4 +159,4 @@ def run_similarity_test(filename, semantic_descriptors, similarity_fn):
     return (num_correct/len(lines))*100
 
 if __name__ == "__main__":
-    pass
+    build_semantic_descriptors_from_files(["text1.txt"])
