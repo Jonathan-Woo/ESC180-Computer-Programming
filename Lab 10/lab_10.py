@@ -84,10 +84,13 @@ def is_balanced(s):
     loc_start = 0
     loc_end = 0
     if '(' in s and ')' in s:
-        loc_start = min(s.index('('), s.index(')'))
-        loc_end = max(s.index('('), s.index(')'))
-        s = s[0:loc_start] + s[loc_start + 1:loc_end] + s[loc_end + 1:]
-        return is_balanced(s)
+        loc_start = s.index('(')
+        loc_end = s.index(')')
+        if loc_start < loc_end:
+            s = s[loc_start + 1:loc_end] 
+            return is_balanced(s)
+        else:
+            return False
     
     #base cases
     #if only one bracket exists in s, then there is no other 
