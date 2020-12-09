@@ -52,20 +52,50 @@ def reverse_loop(L):
         
 # Problem 4
 
-#def zigzag1(L):
-    # Hint: here is a recursive function that prints the following sequence for a list L of size n:
-    # L[0] L[n-1] L[1] L[n-2] L[2] L[n-3] ... L[n//2]
+def zigzag1(L):
+    '''Prints a list L in the order: L[n//2] L[n//2-1] L[n//2+1] 
+    L[n//2-2]...
     
-    # if len(L) == 0:
-    #     print('')
-    # elif len(L) == 1:
-    #     print(L[0], end = "")
-    # else:
-    #     print(L[0], L[-1], end = "")
-    # zigzag1(L[1:-1])
-    
-    
+    Works for both even and odd lists.
+    '''
+    #base case
+    if len(L) == 0:
+        print('')
+    elif len(L) == 1:
+        print(L[0], end = "")
+        
+    #even case
+    elif len(L) % 2 != 0:
+        print(L[len(L)//2])
+        zigzag1(L[0:len(L)//2] + L[len(L)//2 + 1:])
+    #odd case
+    else:
+        print(L[len(L)//2], L[len(L)//2 - 1], end = "\n")
+        zigzag1(L[0:len(L)//2 - 1] + L[len(L)//2+1:])
+                
 # Problem 5
-
-# def is_balanced(s):
-# ''' Returns True iff the string s has balanced ()'''
+def is_balanced(s):
+    ''' Returns True iff the string s has balanced ()
+    '''
+    #The idea is to assume that an open bracket will match with the
+    #first close bracket and a close bracket will match with the
+    #nearest open bracket.
+    
+    loc_start = 0
+    loc_end = 0
+    if '(' in s and ')' in s:
+        loc_start = min(s.index('('), s.index(')'))
+        loc_end = max(s.index('('), s.index(')'))
+        s = s[0:loc_start] + s[loc_start + 1:loc_end] + s[loc_end + 1:]
+        return is_balanced(s)
+    
+    #base cases
+    #if only one bracket exists in s, then there is no other 
+    #bracket to match it with and it must not be balanced
+    elif '(' in s or ')' in s:
+        return False
+    
+    #if you've reached an s with no brackets, the original s is
+    #balanced
+    else:
+        return True
